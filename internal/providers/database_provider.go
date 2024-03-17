@@ -37,7 +37,7 @@ func (databaseProvider *DatabaseProvider) InitGorm() *gorm.DB {
 
 	gormDB, err := gorm.Open(dialector, &gorm.Config{
 		SkipDefaultTransaction: true,
-		Logger:                 logger.Default.LogMode(logger.Info),
+		Logger:                 logger.Default.LogMode(logger.Silent),
 		NowFunc: func() time.Time {
 			location, _ := time.LoadLocation(timezone)
 			return time.Now().In(location)
