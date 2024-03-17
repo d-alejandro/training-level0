@@ -5,6 +5,7 @@ import (
 	"github.com/spf13/viper"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
+	"gorm.io/gorm/logger"
 	"log"
 	"time"
 )
@@ -36,6 +37,7 @@ func (databaseProvider *DatabaseProvider) InitGorm() *gorm.DB {
 
 	gormDB, err := gorm.Open(dialector, &gorm.Config{
 		SkipDefaultTransaction: true,
+		Logger:                 logger.Default.LogMode(logger.Info),
 		NowFunc: func() time.Time {
 			location, _ := time.LoadLocation(timezone)
 			return time.Now().In(location)
