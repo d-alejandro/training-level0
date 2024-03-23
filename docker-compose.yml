@@ -14,5 +14,6 @@ services:
 
   nats-streaming-server:
     image: nats-streaming:0.25.6
+    restart: always
     ports:
       - ${NATS_PORT}:4222
