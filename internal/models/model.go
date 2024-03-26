@@ -1,4 +1,4 @@
-package validators
+package models
 
 type Model struct {
 	OrderUID    string `json:"order_uid" validate:"required"`
