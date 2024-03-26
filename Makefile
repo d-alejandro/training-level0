@@ -5,3 +5,8 @@ run:
 
 down:
 	docker-compose down
+
+build:
+	go mod download && \
+	go build -o ./.bin/app ./cmd/app/main.go && \
+	go build -o ./.bin/publisher ./cmd/publisher/main.go
