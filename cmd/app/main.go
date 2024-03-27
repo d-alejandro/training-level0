@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"github.com/d-alejandro/training-level0/internal/memory_cache"
 	"github.com/d-alejandro/training-level0/internal/migrations"
 	"github.com/d-alejandro/training-level0/internal/models"
 	"github.com/d-alejandro/training-level0/internal/nats_streaming"
@@ -19,12 +20,15 @@ import (
 var (
 	gormDB                 *gorm.DB
 	orderModelStoreUseCase *use_cases.OrderModelStoreUseCase
+	orderModelLoadUseCase  *use_cases.OrderModelLoadUseCase
+	cache                  memory_cache.CacheInterface
 )
 
 func main() {
 	bootProviders()
 	runMigrations()
 	initBindings()
+	initCache()
 
 	clientID := viper.GetString("CLIENT_ID_SUBSCRIBER")
 	stanConnector := nats_streaming.NewStanConnector(clientID)
@@ -57,6 +61,14 @@ func runMigrations() {
 func initBindings() {
 	orderModelStoreRepository := repositories.NewOrderModelStoreRepository(gormDB)
 	orderModelStoreUseCase = use_cases.NewOrderModelStoreUseCase(orderModelStoreRepository)
+
+	newOrderModelLoadRepository := repositories.NewOrderModelLoadRepository(gormDB)
+	orderModelLoadUseCase = use_cases.NewOrderModelLoadUseCase(newOrderModelLoadRepository)
+}
+
+func initCache() {
+	orderModels := orderModelLoadUseCase.Execute()
+	cache = memory_cache.NewCache(orderModels)
 }
 
 func getSubscriberFunction(message *stan.Msg) {
@@ -76,6 +88,11 @@ func getSubscriberFunction(message *stan.Msg) {
 
 	if err := orderModelStoreUseCase.Execute(&model); err != nil {
 		log.Println("Error saving to database.")
+		return
+	}
+
+	if err := cache.SetModel(model.OrderUID, &model); err != nil {
+		log.Println("Error saving to cache.")
 		return
 	}
 
