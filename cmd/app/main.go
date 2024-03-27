@@ -14,7 +14,6 @@ import (
 	"github.com/spf13/viper"
 	"gorm.io/gorm"
 	"log"
-	"time"
 )
 
 var (
@@ -39,7 +38,7 @@ func main() {
 	stanSubscriber := nats_streaming.NewStanSubscriber(stanConnection)
 	stanSubscriber.Subscribe(getSubscriberFunction)
 
-	time.Sleep(60 * time.Second)
+	registerRoutes()
 }
 
 func bootProviders() {
@@ -97,4 +96,10 @@ func getSubscriberFunction(message *stan.Msg) {
 	}
 
 	log.Println("The message is received.")
+}
+
+func registerRoutes() {
+	orderModelShowUseCase := use_cases.NewOrderModelShowUseCase(cache)
+	routeProvider := providers.NewRouteProvider(orderModelShowUseCase)
+	routeProvider.Register()
 }
