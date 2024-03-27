@@ -15,11 +15,16 @@ func NewRouteProvider(orderModelShowUseCase *use_cases.OrderModelShowUseCase) *R
 	return &RouteProvider{orderModelShowUseCase}
 }
 
-func (routeProvider *RouteProvider) Register() {
-	router := gin.Default()
+func (routeProvider *RouteProvider) Register(router *gin.Engine) {
 	router.Use(gin.Recovery())
 
 	initApiRoutes(router, routeProvider.orderModelShowUseCase)
+
+	const testing = "testing"
+
+	if viper.GetString("APP_ENV") == testing {
+		return
+	}
 
 	port := viper.GetString("HTTP_PORT")
 
