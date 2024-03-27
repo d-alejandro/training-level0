@@ -19,10 +19,10 @@ import (
 
 var (
 	Router                 *gin.Engine
+	Cache                  memory_cache.CacheInterface
 	gormDB                 *gorm.DB
 	orderModelStoreUseCase *use_cases.OrderModelStoreUseCase
 	orderModelLoadUseCase  *use_cases.OrderModelLoadUseCase
-	cache                  memory_cache.CacheInterface
 )
 
 func Boot() {
@@ -69,7 +69,7 @@ func initBindings() {
 
 func initCache() {
 	orderModels := orderModelLoadUseCase.Execute()
-	cache = memory_cache.NewCache(orderModels)
+	Cache = memory_cache.NewCache(orderModels)
 }
 
 func getSubscriberFunction(message *stan.Msg) {
@@ -92,7 +92,7 @@ func getSubscriberFunction(message *stan.Msg) {
 		return
 	}
 
-	if err := cache.SetModel(model.OrderUID, &model); err != nil {
+	if err := Cache.SetModel(model.OrderUID, &model); err != nil {
 		log.Println("Error saving to cache.")
 		return
 	}
@@ -101,7 +101,7 @@ func getSubscriberFunction(message *stan.Msg) {
 }
 
 func registerRoutes() {
-	orderModelShowUseCase := use_cases.NewOrderModelShowUseCase(cache)
+	orderModelShowUseCase := use_cases.NewOrderModelShowUseCase(Cache)
 	routeProvider := providers.NewRouteProvider(orderModelShowUseCase)
 	Router = gin.Default()
 	routeProvider.Register(Router)
