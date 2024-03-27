@@ -1,5 +1,10 @@
 package models
 
+import (
+	"encoding/json"
+	"errors"
+)
+
 type Model struct {
 	OrderUID    string `json:"order_uid" validate:"required"`
 	TrackNumber string `json:"track_number" validate:"required"`
@@ -46,4 +51,14 @@ type Model struct {
 	SmID              int    `json:"sm_id" validate:"required,numeric,min=0"`
 	DateCreated       string `json:"date_created" validate:"required,datetime=2006-01-02T15:04:05Z07:00"`
 	OofShard          string `json:"oof_shard" validate:"required"`
+}
+
+func (model *Model) Scan(value interface{}) error {
+	bytes, ok := value.([]byte)
+
+	if !ok {
+		return errors.New("type assertion to []byte failed")
+	}
+
+	return json.Unmarshal(bytes, &model)
 }
