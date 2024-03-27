@@ -1,9 +1,9 @@
 package resources
 
-func GetModelJSON() string {
+func GetModelJSON(value string) string {
 	return `
 {
-  "order_uid": "b563feb7b2b84b6test",
+  "order_uid": "b563feb7b2b84b6test` + value + `",
   "track_number": "WBILMTESTTRACK",
   "entry": "WBIL",
   "delivery": {
