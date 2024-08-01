@@ -1,4 +1,17 @@
-## Training Level0
+<p align="center">
+    <a href="https://tech.wildberries.ru" target="_blank">
+        <img src="wb.png" alt="wb">
+    </a>
+</p>
+
+## WB Tech: level # 0 (Golang)
+
+### Программа курса
+
+- Go
+- PostgreSQL
+- NATS Streaming
+- Gin Web Framework
 
 ### Получение данных о заказе
 
